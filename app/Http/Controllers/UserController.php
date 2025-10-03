@@ -53,7 +53,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        
+        $fields = ['name', 'email', 'password'];
+        return view('edit', compact('fields'));
     }
 
     /**
@@ -61,7 +62,16 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
+        $user = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+        if (empty($user['password'])) {
+            unset($user['password']);
+        }
+        User::where('id', $id)->update($user);
+        return redirect()->route('home');
     }
 
     /**
