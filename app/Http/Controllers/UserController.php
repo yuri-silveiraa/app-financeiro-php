@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('home', compact('users'));
+        return view('home.home', compact('users'));
     }
 
     /**
@@ -22,7 +22,7 @@ class UserController extends Controller
     public function create()
     {
         $fields = ['name', 'email', 'password'];
-        return view('login', compact('fields'));
+        return view('auth.login', compact('fields'));
     }
 
     /**
