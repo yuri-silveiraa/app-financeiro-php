@@ -18,7 +18,7 @@
     @endif
 
     {{-- Formulário de Login --}}
-    <form action="{{ route('login.store') }}" method="POST" class="mt-4">
+    <form action="{{ route('login.submit') }}" method="POST" class="mt-4">
         @csrf
         <div class="mb-3">
             <label for="email" class="form-label">E-mail</label>
@@ -37,7 +37,7 @@
 
     <div class="text-center mt-3">
         <p>Não tem uma conta?</p>
-        <a href="/auth/register" class="btn btn-secondary">Criar Conta</a>
+        <a href="{{ route('users.create') }}" class="btn btn-secondary">Criar Conta</a>
     </div>
 </div>
 @endsection

@@ -4,82 +4,117 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
         $users = User::all();
+
+        if ($request->wantsJson()) {
+            return response()->json($users);
+        }
+
         return view('home.home', compact('users'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(Request $request)
     {
         $fields = ['name', 'email', 'password'];
-        return view('auth.login', compact('fields'));
+
+        if ($request->wantsJson()) {
+            return response()->json(['fields' => $fields]);
+        }
+
+        return view('auth.register', compact('fields'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $user = $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
-        User::create($user);
-        return redirect()->route('home');
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        $user = User::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Usuário criado com sucesso',
+                'user' => $user
+            ], 201);
+        }
+
+        return redirect()->route('home')->with('success', 'Usuário criado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        return view('home', compact('user'));
+
+        if ($request->wantsJson()) {
+            return response()->json($user);
+        }
+
+        return view('home.home', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
+        $user = User::findOrFail($id);
         $fields = ['name', 'email', 'password'];
-        return view('edit', compact('fields'));
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'user' => $user,
+                'fields' => $fields
+            ]);
+        }
+
+        return view('edit', compact('user', 'fields'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        $user = $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,',
+            'email' => "required|string|email|max:255|unique:users,email,{$id}",
             'password' => 'nullable|string|min:8|confirmed',
         ]);
-        if (empty($user['password'])) {
-            unset($user['password']);
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
         }
-        User::where('id', $id)->update($user);
-        return redirect()->route('home');
+
+        $user = User::findOrFail($id);
+        $user->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Usuário atualizado com sucesso',
+                'user' => $user
+            ]);
+        }
+
+        return redirect()->route('home')->with('success', 'Usuário atualizado com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        User::destroy($id);
-        return redirect()->route('home');
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Usuário removido com sucesso']);
+        }
+
+        return redirect()->route('home')->with('success', 'Usuário removido com sucesso!');
     }
 }
+

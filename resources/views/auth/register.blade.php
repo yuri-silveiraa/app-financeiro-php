@@ -18,9 +18,12 @@
     @endif
 
     {{-- Formulário de registro --}}
-    <form action="{{ route('register.store') }}" method="POST" class="mt-4">
+    <form action="{{ route('users.store') }}" method="POST" class="mt-4">
         @csrf
 
+        @foreach ($fields as $field)
+            <input type="hidden" name="fields[]" value="{{ $field }}">
+        @endforeach
         <div class="mb-3">
             <label for="name" class="form-label">Nome</label>
             <input type="text" name="name" id="name" 
@@ -50,7 +53,7 @@
 
     <div class="text-center mt-3">
         <p>Já tem uma conta?</p>
-        <a href="{{ route('login.create') }}" class="btn btn-secondary">Fazer Login</a>
+        <a href="{{ route('login') }}" class="btn btn-secondary">Fazer Login</a>
     </div>
 </div>
 @endsection

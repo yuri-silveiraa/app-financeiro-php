@@ -1,17 +1,25 @@
 <?php
 
-use App\Http\Controllers\UserController;
-use App\Models\User;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
 
-Route::resource('users', UserController::class);
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        api: __DIR__.'/../routes/api.php',
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
 
-Route::get('/login', [UserController::class, 'create'])->name('login.create');
-Route::post('/login', [UserController::class, 'store'])->name('login.store');
-
-Route::get('/register', [UserController::class, 'create'])->name('auth.register');
-Route::post('/register', [UserController::class, 'store'])->name('register.store');
-
-Route::get('/', function(){
-    return view('home.home');
-});
+        $middleware->alias([
+            'auth' => \App\Http\Middleware\AuthenticateMiddleware::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e) {
+            return response()->json(['error' => 'Não autenticado.'], 401);
+        });
+    })->create();
