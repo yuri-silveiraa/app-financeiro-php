@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
     public function showLoginForm(Request $request)
     {
-        if ($request->wantsJson()) {
-            return response()->json(['message' => 'Use /api/login para autenticação']);
-        }
         return view('auth.login');
     }
 
@@ -32,7 +31,7 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Credenciais inválidas']);
         }
 
-        $token = $user->createToken('api_token')->plainTextToken;
+        $token = JWTAuth::fromUser($user);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -47,9 +46,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $user = $request->user();
-        if ($user) {
-            $user->tokens()->delete();
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+        } catch (JWTException $e) {
         }
 
         if ($request->wantsJson()) {
@@ -57,5 +56,11 @@ class AuthController extends Controller
         }
 
         return redirect()->route('login');
+    }
+
+    public function me(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        return response()->json($user);
     }
 }

@@ -1,25 +1,14 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
-return Application::configure(basePath: dirname(__DIR__))
-    ->withRouting(
-        api: __DIR__.'/../routes/api.php',
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up',
-    )
-    ->withMiddleware(function (Middleware $middleware): void {
+use Illuminate\Support\Facades\Route;
 
-        $middleware->alias([
-            'auth' => \App\Http\Middleware\AuthenticateMiddleware::class,
-            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e) {
-            return response()->json(['error' => 'Não autenticado.'], 401);
-        });
-    })->create();
+Route::resource('users', UserController::class);
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::view('/', 'home');

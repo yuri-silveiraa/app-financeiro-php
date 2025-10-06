@@ -17,3 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+    $app->withMiddleware(fn($m) => $m->alias([
+        'auth.jwt' => \App\Http\Middleware\AuthenticateMiddleware::class,
+    ]));
