@@ -53,7 +53,7 @@
 
     <div class="text-center mt-3">
         <p>Já tem uma conta?</p>
-        <a href="{{ route('login') }}" class="btn btn-secondary">Fazer Login</a>
+        <a href="{{ route('login') }}" class="btn btn-dark">Fazer Login</a>
     </div>
 </div>
 @endsection

@@ -16,7 +16,7 @@ class UserController extends Controller
             return response()->json($users);
         }
 
-        return view('home.home', compact('users'));
+        return view('index', compact('users'));
     }
 
     public function create(Request $request)
@@ -49,7 +49,7 @@ class UserController extends Controller
             ], 201);
         }
 
-        return redirect()->route('home')->with('success', 'Usuário criado com sucesso!');
+        return redirect()->route('expensive.expensive')->with('success', 'Usuário criado com sucesso!');
     }
 
     public function show(Request $request, string $id)
@@ -60,7 +60,7 @@ class UserController extends Controller
             return response()->json($user);
         }
 
-        return view('home.home', compact('user'));
+        return view('user.user', compact('user'));
     }
 
     public function edit(Request $request, string $id)
@@ -75,7 +75,7 @@ class UserController extends Controller
             ]);
         }
 
-        return view('edit', compact('user', 'fields'));
+        return view('user.edit', compact('user', 'fields'));
     }
 
     public function update(Request $request, string $id)
@@ -102,7 +102,7 @@ class UserController extends Controller
             ]);
         }
 
-        return redirect()->route('home')->with('success', 'Usuário atualizado com sucesso!');
+        return redirect()->route('user.user')->with('success', 'Usuário atualizado com sucesso!');
     }
 
     public function destroy(Request $request, string $id)
@@ -114,7 +114,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Usuário removido com sucesso']);
         }
 
-        return redirect()->route('home')->with('success', 'Usuário removido com sucesso!');
+        return redirect()->route('login')->with('success', 'Usuário removido com sucesso!');
     }
 }
 

@@ -41,7 +41,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return redirect()->route('users.index');
+        return redirect()->route('expensive.expensive', ['id' => $user->id])->withCookie(cookie('token', $token, 60));
     }
 
     public function logout(Request $request)

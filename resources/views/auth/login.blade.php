@@ -37,7 +37,7 @@
 
     <div class="text-center mt-3">
         <p>Não tem uma conta?</p>
-        <a href="{{ route('users.create') }}" class="btn btn-secondary">Criar Conta</a>
+        <a href="{{ route('users.create') }}" class="btn btn-dark">Criar Conta</a>
     </div>
 </div>
 @endsection
