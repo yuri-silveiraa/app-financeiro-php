@@ -13,7 +13,7 @@ class AuthenticateMiddleware
     public function handle(Request $request, Closure $next)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
             if ($request->wantsJson()) {
                 return response()->json(['error' => 'Token inválido ou expirado'], 401);
